@@ -1,0 +1,184 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 142 100% 39%; /* PampaTime green */
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142 100% 39%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 142 100% 39%;
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142 100% 39%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .class-card {
+    @apply rounded-md p-2 flex flex-col text-left text-xs;
+  }
+  
+  .class-card-calculus {
+    @apply bg-purple-100 border-l-4 border-purple-500;
+  }
+  
+  .class-card-math {
+    @apply bg-green-100 border-l-4 border-green-500;
+  }
+  
+  .class-card-algorithms {
+    @apply bg-red-100 border-l-4 border-red-500;
+  }
+  
+  .class-card-practices {
+    @apply bg-blue-100 border-l-4 border-blue-500;
+  }
+  
+  .class-card-challenges {
+    @apply bg-green-100 border-l-4 border-green-500;
+  }
+}
+
+
+.fc-timegrid-slot {
+  height: 50px !important; /* Altura fixa para todos os slots */
+}
+.fc-timegrid-slot-lane {
+  height: 50px !important;
+}
+
+.fc-timegrid-col.fc-day-today {
+  background-color: transparent !important;
+}
+
+
+/* Exemplo de estilos para personalizar o cabeçalho */
+.day-header {
+    text-transform: capitalize;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 8px 0;
+}
+
+/* Para destacar cada dia da semana em células separadas como na imagem */
+.fc-col-header-cell {
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+}
+
+/* Para ajustar a altura do cabeçalho se necessário */
+.fc-col-header {
+    height: 40px;
+}
+
+.fc-col-header-cell-cushion {
+  text-transform: capitalize;
+}
+
+.fc-day-header-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinha itens à esquerda em vez de centro */
+  padding: 1px 5px; /* Adicionado padding horizontal para dar espaço */
+  width: 100%;
+}
+
+.fc-day-abbr {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: lighter;
+  text-align: left; /* Garante alinhamento à esquerda */
+  align-self: flex-start; /* Alinha o próprio elemento à esquerda */
+}
+
+.fc-day-name {
+  font-weight: bold;
+  text-align: left;
+  /* font-size: large; */
+  font-size: 1.3rem;
+  /* margin-top: px; */
+  width: 100%; /* Garante que ocupe toda a largura disponível */
+}
+
+/* Estilos adicionais para garantir que o cabeçalho tenha espaço suficiente */
+.fc .fc-col-header-cell-cushion {
+  padding: 5px 3px;
+  width: 100%; /* Ocupa toda a largura disponível */
+}
+
+/* Ajuste a altura do cabeçalho para acomodar as duas linhas */
+.fc .fc-col-header-cell {
+  padding: 0;
+}
+
+/* Necessário para garantir que o conteúdo do cabeçalho tenha largura total */
+.fc-col-header-cell-cushion {
+  width: 100%;
+  display: block;
+}
