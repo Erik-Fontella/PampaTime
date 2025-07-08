@@ -6,9 +6,10 @@ import {
     FiBook,
     FiAward,
 } from 'react-icons/fi';
-
+import { useNavigate } from 'react-router-dom';
 const CardsAdm = () => {
     const userName = 'Usuário';
+    const navigate = useNavigate();
 
     return (
         <section className="px-8 py-6 font-ubuntu">
@@ -26,9 +27,12 @@ const CardsAdm = () => {
                     <FiClock className="absolute top-4 right-4 text-2xl text-black" />
                     <h3 className="text-xl font-semibold text-gray-900 mb-1">Horários</h3>
                     <p className="text-gray-600 mb-4">Organize e Visualize os horários</p>
-                    <button className="border border-black px-4 py-2 rounded-full font-medium hover:bg-green-500 hover:text-white transition">
-                        Ver Detalhes
-                    </button>
+                    <button
+        onClick={() => navigate("/")}
+        className="border border-black px-4 py-2 rounded-full font-medium hover:bg-green-500 hover:text-white transition"
+      >
+        Ver Detalhes
+      </button>
                 </div>
 
             </div>
