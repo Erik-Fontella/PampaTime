@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase configuration 
+.env
+.env.local
+.env.*.local
+
+# For Firebase functions 
+/functions/node_modules
+/functions/dist
