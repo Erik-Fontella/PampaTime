@@ -1,13 +1,11 @@
-import type { Config } from "tailwindcss";
-const colors = require('tailwindcss/colors'); // Importa as cores padrão do Tailwind
+const colors = require('tailwindcss/colors'); 
 
-export default {
+/** @type {import('tailwindcss').Config} */ 
+module.exports = { 
     darkMode: ["class"],
     content: [
-        "./pages/**/*.{ts,tsx}",
-        "./components/**/*.{ts,tsx}",
-        "./app/**/*.{ts,tsx}",
-        "./src/**/*.{ts,tsx}", // Garante que todos os arquivos em src sejam escaneados
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}", // Garante que todos os arquivos em src sejam escaneados
     ],
     prefix: "",
     theme: {
@@ -20,7 +18,6 @@ export default {
         },
         extend: {
             colors: {
-                // Suas cores personalizadas Shadcn/UI baseadas em variáveis CSS
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',
@@ -69,12 +66,10 @@ export default {
                     light: '#EEFFF4',
                     lighter: '#F5FFF9'
                 },
-                // Reintroduz as cores padrão do Tailwind para usar com `bg-purple-100`, etc.
                 purple: colors.purple,
                 green: colors.green,
                 red: colors.red,
                 blue: colors.blue,
-                // Se precisar de todas as cores padrão, pode usar: ...colors
             },
             borderRadius: {
                 lg: 'var(--radius)',
@@ -106,4 +101,4 @@ export default {
         }
     },
     plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};

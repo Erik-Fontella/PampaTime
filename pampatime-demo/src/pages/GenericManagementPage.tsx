@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/Header"; 
+import Footer from "@/components/Footer"; 
 import SearchFilter from "@/components/management/SearchFilter";
 import GenericTable, { TableColumn } from "@/components/management/GenericTable";
 import ManagementNav from "@/components/management/ManagementNav";
@@ -8,6 +8,8 @@ import { ManagedItem } from "@/types/management";
 import useFirestoreCollection from "@/hooks/useFirestoreCollection";
 import useFirestoreOperations from "@/hooks/useFirestoreOperations";
 import styles from '@/styles/management/GenericManagementPage.module.css';
+import GenericAddModal from "@/components/management/GenericAddModal";
+import { entityFormConfigs } from '@/config/formConfig';
 
 interface GenericManagementPageProps<T extends ManagedItem> {
   title: string;
@@ -15,7 +17,6 @@ interface GenericManagementPageProps<T extends ManagedItem> {
   searchPlaceholder?: string;
   columns: TableColumn<T>[];
   addBtnLabel: string;
-  onAddClick: () => void;
 }
 
 const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
@@ -25,13 +26,14 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     searchPlaceholder,
     columns,
     addBtnLabel,
-    onAddClick,
   } = props;
 
   const { data: fetchedData, loading, error: fetchError } = useFirestoreCollection<any>(collectionPath, { listenLive: true });
   const { deleteDocument, updateDocument, loading: opLoading, error: opError, success: opSuccess } = useFirestoreOperations<any>(collectionPath);
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const currentFormConfig = entityFormConfigs[collectionPath];
 
   useEffect(() => {
     setFilteredData(fetchedData);
@@ -42,7 +44,6 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       setFilteredData(fetchedData);
       return;
     }
-
     const lowerCaseTerm = term.toLowerCase();
     const filtered = fetchedData.filter((item) =>
       Object.values(item).some((value) =>
@@ -50,6 +51,10 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       )
     );
     setFilteredData(filtered);
+  };
+
+  const handleItemAdded = () => {
+    console.log(`${currentFormConfig?.title.replace('Adicionar ', '')} adicionado(a) com sucesso!`);
   };
 
   const handleEdit = (item: any) => {
@@ -99,11 +104,11 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         <div className={`${styles.managementBar}`}>
           <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
             <div className={styles.managementNavContainer}>
-              <ManagementNav />
+              <ManagementNav className="mx-auto" />
             </div>
             <div className={styles.searchAddContainer}>
-              <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} className="flex-grow md:flex-grow-0 md:w-64" />
-              <button className="px-6 py-2 bg-green-500 text-white rounded-md flex items-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
+              <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} />
+              <button className="w-64 px-6 py-2 bg-green-500 text-white rounded-md flex items-center justify-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
@@ -127,11 +132,11 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         <div className={`${styles.managementBar}`}>
           <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4"> 
             <div className={styles.managementNavContainer}>
-              <ManagementNav />
+              <ManagementNav className="mx-auto" />
             </div>
             <div className={styles.searchAddContainer}>
-              <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} className="flex-grow md:flex-grow-0 md:w-64" />
-              <button className="px-6 py-2 bg-green-500 text-white rounded-md flex items-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
+              <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} />
+              <button className="w-64 px-6 py-2 bg-green-500 text-white rounded-md flex items-center justify-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
@@ -154,17 +159,16 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       <div className={`${styles.managementBar}`}>
         <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
           <div className={styles.managementNavContainer}>
-            <ManagementNav />
+            <ManagementNav className="mx-auto" />
           </div>
           <div className={styles.searchAddContainer}>
             <SearchFilter
               onSearch={handleSearch}
               placeholder={searchPlaceholder}
-              className="flex-grow md:flex-grow-0 md:w-64"
             />
             <button
-              onClick={onAddClick}
-              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap"
+              onClick={() => setIsModalOpen(true)}
+              className="w-64 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
@@ -176,6 +180,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       </div>
 
       <main className="flex-grow container mx-auto px-4 py-10 mt-12">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         {filteredData.length === 0 ? (
            <p className="text-gray-500 text-center py-8">Nenhum {title.toLowerCase().replace('gerenciar ', '').replace(/s$/, '')} encontrado.</p>
         ) : (
@@ -183,6 +188,16 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         )}
       </main>
       <Footer />
+
+      {currentFormConfig && (
+        <GenericAddModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          collectionPath={collectionPath}
+          formConfig={currentFormConfig}
+          onItemAdded={handleItemAdded}
+        />
+      )}
     </div>
   );
 };

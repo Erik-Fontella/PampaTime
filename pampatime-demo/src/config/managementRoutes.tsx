@@ -49,7 +49,6 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     onAddClick: () => alert("Abrir formulário para adicionar professor!"),
     columns: [
       { key: "name", header: "Nome" },
-      { key: "specialty", header: "Especialidade" },
       { key: "email", header: "Email" },
       { key: "id", header: "Ações", render: (item: TeacherItem) => (
         <div className="flex gap-2">
@@ -67,9 +66,8 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     addBtnLabel: "Adicionar Curso",
     onAddClick: () => alert("Abrir formulário para adicionar curso!"),
     columns: [
+      { key: "code", header: "Código" },
       { key: "name", header: "Nome do Curso" },
-      { key: "duration", header: "Duração" },
-      { key: "students", header: "Número de Alunos" },
       { key: "id", header: "Ações", render: (item: CourseItem) => (
         <div className="flex gap-2">
           <button onClick={() => handleEditAction(item)} className="text-blue-600 hover:underline">Editar</button>

@@ -1,8 +1,11 @@
-// src/components/management/ManagementNav.tsx
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NavItem } from '@/types/management';
+
+
+interface ManagementNavProps {
+  className?: string;
+}
 
 const navLinks: NavItem[] = [
   { label: 'Professor', path: '/professores' },
@@ -11,12 +14,13 @@ const navLinks: NavItem[] = [
   { label: 'Disciplinas', path: '/disciplinas' },
 ];
 
-const ManagementNav = () => {
+
+const ManagementNav = ({ className }: ManagementNavProps) => {
   const location = useLocation();
 
   return (
-    <nav className="w-full">
-      <ul className="flex flex-row flex-wrap justify-center gap-4 p-1"> 
+    <nav className={`w-full ${className || ''}`}>
+      <ul className="flex flex-row flex-wrap justify-center gap-4 p-1">
         {navLinks.map((link) => (
           <li key={link.path}>
             <Link
