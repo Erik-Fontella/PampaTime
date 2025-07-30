@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Header from "@/components/Header"; 
-import Footer from "@/components/Footer"; 
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import SearchFilter from "@/components/management/SearchFilter";
 import GenericTable, { TableColumn } from "@/components/management/GenericTable";
 import ManagementNav from "@/components/management/ManagementNav";
+import GenericAddModal from "@/components/management/GenericAddModal";
+
 import { ManagedItem } from "@/types/management";
 import useFirestoreCollection from "@/hooks/useFirestoreCollection";
 import useFirestoreOperations from "@/hooks/useFirestoreOperations";
+
 import styles from '@/styles/management/GenericManagementPage.module.css';
-import GenericAddModal from "@/components/management/GenericAddModal";
 import { entityFormConfigs } from '@/config/formConfig';
 
 interface GenericManagementPageProps<T extends ManagedItem> {
@@ -130,7 +132,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Header />
         <div className={`${styles.managementBar}`}>
-          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4"> 
+          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
             <div className={styles.managementNavContainer}>
               <ManagementNav className="mx-auto" />
             </div>
@@ -178,7 +180,6 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
           </div>
         </div>
       </div>
-
       <main className="flex-grow container mx-auto px-4 py-10 mt-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         {filteredData.length === 0 ? (
@@ -188,7 +189,6 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         )}
       </main>
       <Footer />
-
       {currentFormConfig && (
         <GenericAddModal
           isOpen={isModalOpen}

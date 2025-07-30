@@ -34,7 +34,6 @@ const App = () => (
                   collectionPath={route.collectionPath}
                   searchPlaceholder={route.searchPlaceholder}
                   addBtnLabel={route.addBtnLabel}
-                  onAddClick={route.onAddClick}
                   columns={route.columns}
                 />
               }

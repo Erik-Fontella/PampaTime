@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { db } from '@/firebase/config';
-import { doc, deleteDoc, updateDoc, collection, addDoc, DocumentData, setDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc, collection, addDoc, DocumentData, setDoc, serverTimestamp, FieldValue } from 'firebase/firestore'; // <--- Importe serverTimestamp e FieldValue
 import { ManagedItem } from '@/types/management';
+import { SemesterItem } from '@/types/management'; 
 
 const useFirestoreOperations = <T extends ManagedItem>(collectionPath: string) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,13 @@ const useFirestoreOperations = <T extends ManagedItem>(collectionPath: string) =
     setError(null);
     setSuccess(false);
     try {
-      const docRef = await addDoc(collection(db, collectionPath), data as DocumentData);
+      let dataToSave: DocumentData = data;
+
+      if (collectionPath === 'semestres') {
+        dataToSave = { ...data, lastModified: serverTimestamp() };
+      }
+      
+      const docRef = await addDoc(collection(db, collectionPath), dataToSave);
       setSuccess(true);
       return docRef.id;
     } catch (e: any) {
@@ -32,7 +39,11 @@ const useFirestoreOperations = <T extends ManagedItem>(collectionPath: string) =
     setSuccess(false);
     try {
       const docRef = doc(db, collectionPath, id);
-      await updateDoc(docRef, data as DocumentData);
+      let dataToUpdate: DocumentData = data;
+      if (collectionPath === 'semestres') {
+        dataToUpdate = { ...data, lastModified: serverTimestamp() };
+      }
+      await updateDoc(docRef, dataToUpdate);
       setSuccess(true);
     } catch (e: any) {
       console.error(`Erro ao atualizar documento ${id} na coleção ${collectionPath}:`, e);

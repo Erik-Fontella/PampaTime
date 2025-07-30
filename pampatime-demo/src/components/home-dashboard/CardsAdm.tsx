@@ -35,7 +35,7 @@ const CardsAdm = () => {
                     <h3 className="text-xl font-semibold text-gray-900 mb-1">Horários</h3>
                     <p className="text-gray-600 mb-4">Organize e Visualize os horários</p>
                     <Link
-                        to="/salas"
+                        to="/semestres"
                         className="border border-black px-4 py-2 rounded-full font-medium hover:bg-green-500 hover:text-white transition text-center"
                     >
                         Ver Detalhes
