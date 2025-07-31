@@ -4,12 +4,10 @@ import Footer from "@/components/Footer";
 import SearchFilter from "@/components/management/SearchFilter";
 import GenericTable, { TableColumn } from "@/components/management/GenericTable";
 import ManagementNav from "@/components/management/ManagementNav";
-import GenericAddModal from "@/components/management/GenericAddModal";
-
+import GenericItemModal from "@/components/management/GenericItemModal"; 
 import { ManagedItem } from "@/types/management";
 import useFirestoreCollection from "@/hooks/useFirestoreCollection";
 import useFirestoreOperations from "@/hooks/useFirestoreOperations";
-
 import styles from '@/styles/management/GenericManagementPage.module.css';
 import { entityFormConfigs } from '@/config/formConfig';
 
@@ -35,6 +33,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<any | null>(null); 
   const currentFormConfig = entityFormConfigs[collectionPath];
 
   useEffect(() => {
@@ -55,12 +54,20 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     setFilteredData(filtered);
   };
 
-  const handleItemAdded = () => {
-    console.log(`${currentFormConfig?.title.replace('Adicionar ', '')} adicionado(a) com sucesso!`);
+  const handleItemSaved = () => {
+    console.log(`Item em ${collectionPath} salvo com sucesso!`);
+    setIsModalOpen(false); 
+    setItemToEdit(null); 
   };
 
   const handleEdit = (item: any) => {
-    alert(`Editar item: ${item.name || (item as any).title || item.id}`);
+    setItemToEdit(item); 
+    setIsModalOpen(true); 
+  };
+
+  const handleAdd = () => {
+    setItemToEdit(null); 
+    setIsModalOpen(true); 
   };
 
   const handleDelete = async (itemId: string) => {
@@ -81,7 +88,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         render: (item: any) => (
           <div className="flex gap-2">
             <button
-              onClick={() => handleEdit(item)}
+              onClick={() => handleEdit(item)} 
               className="text-blue-600 hover:underline flex items-center gap-1"
             >
               Editar <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
@@ -132,7 +139,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Header />
         <div className={`${styles.managementBar}`}>
-          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
+          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4"> 
             <div className={styles.managementNavContainer}>
               <ManagementNav className="mx-auto" />
             </div>
@@ -169,7 +176,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
               placeholder={searchPlaceholder}
             />
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleAdd} 
               className="w-64 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -180,6 +187,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
           </div>
         </div>
       </div>
+
       <main className="flex-grow container mx-auto px-4 py-10 mt-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         {filteredData.length === 0 ? (
@@ -190,12 +198,13 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       </main>
       <Footer />
       {currentFormConfig && (
-        <GenericAddModal
+        <GenericItemModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           collectionPath={collectionPath}
           formConfig={currentFormConfig}
-          onItemAdded={handleItemAdded}
+          initialItem={itemToEdit} 
+          onItemSaved={handleItemSaved}
         />
       )}
     </div>
