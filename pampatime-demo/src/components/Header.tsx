@@ -1,12 +1,38 @@
 import logo from '../assets/logo.png';
-import { FiClock } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
-import History from '@/pages/History';
-import HomeDashboard from '@/pages/HomeDashboard';
+import { FiClock, FiLogOut, FiUser } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Header = () => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/home');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
+  const getUserInitials = (name: string | null) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   return (
-    <header className="font-normal fixed top-0 left-0 w-full z-[1000] bg-white px-8 py-4">
+    <header className="font-normal fixed top-0 left-0 w-full z-[1000] bg-white px-8 py-4 shadow-sm">
       <nav className="max-w-[1200px] mx-auto flex justify-between items-center relative">
 
         <div className="flex gap-8 text-gray-600 text-sm">
@@ -30,18 +56,55 @@ const Header = () => {
         </div>
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
-          <img src={logo} alt="PampaTime Logo" className="h-24" />
+          <Link to="/">
+            <img src={logo} alt="PampaTime Logo" className="h-24" />
+          </Link>
         </div>
 
         <div className="flex-1 flex justify-end items-center gap-4">
           <Link to="/history">
-            <FiClock className="text-2xl text-gray-600 hover:text-[#49C17B] cursor-pointer" />
+            <FiClock className="text-2xl text-gray-600 hover:text-[#49C17B] cursor-pointer transition-colors" />
           </Link>
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-            alt="Usuário"
-            className="w-10 h-10 rounded-full object-cover"
-          />
+          
+          {currentUser && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={currentUser.photoURL || undefined} alt={currentUser.displayName || 'User'} />
+                    <AvatarFallback className="bg-green-100 text-green-700">
+                      {getUserInitials(currentUser.displayName)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {currentUser.displayName || 'Usuário'}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {currentUser.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  <FiUser className="mr-2 h-4 w-4" />
+                  <span>Perfil</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                  onClick={handleLogout}
+                >
+                  <FiLogOut className="mr-2 h-4 w-4" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </nav>
     </header>
