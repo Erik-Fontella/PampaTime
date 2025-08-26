@@ -1,5 +1,3 @@
-// src/config/formConfigs.ts
-
 import { EntityFormConfig, FormField, BookingItem, TeacherItem, CourseItem, SubjectItem, SemesterItem } from '@/types/management';
 
 export const entityFormConfigs: { [key: string]: EntityFormConfig<any> } = {
@@ -36,6 +34,7 @@ export const entityFormConfigs: { [key: string]: EntityFormConfig<any> } = {
   salas: {
     title: 'Adicionar Sala',
     fields: [
+      {id: 'code', label: 'CÓDIGO', type: 'text', required: true, placeholder: 'Ex: S201' },
       { id: 'name', label: 'NOME DA SALA', type: 'text', required: true, placeholder: 'Ex: Sala 201' },
       { id: 'capacity', label: 'CAPACIDADE', type: 'number', required: true, placeholder: 'Ex: 45' },
       { id: 'type', label: 'TIPO', type: 'text', required: true, placeholder: 'Ex: Sala de Aula, Laboratório' },
@@ -61,11 +60,9 @@ export const entityFormConfigs: { [key: string]: EntityFormConfig<any> } = {
     title: 'Adicionar Semestre',
     fields: [
       { id: 'name', label: 'NOME DO SEMESTRE', type: 'text', required: true, placeholder: 'Ex: SEMESTRE 02/2025' },
-      // --- REMOVIDO: O campo de 'Última Modificação' não será mais preenchido pelo usuário ---
     ] as FormField[],
     defaultValues: {
       name: '',
-      // --- REMOVIDO: 'lastModified' não é mais um valor padrão ---
     } as Omit<SemesterItem, 'id'>,
   },
 };

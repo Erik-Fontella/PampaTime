@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { ManagedItem, EntityFormConfig, FormField } from '@/types/management';
-import useFirestoreOperations from '@/hooks/useFirestoreOperations';
+import useRealtimeOperations from '@/hooks/useRealtimeOperations';
 
 interface GenericItemModalProps<T extends ManagedItem> {
   isOpen: boolean; 
@@ -35,7 +35,7 @@ const GenericItemModal = <T extends ManagedItem>({
     initialItem ? (initialItem as Omit<T, 'id'>) : formConfig.defaultValues
   );
 
-  const { addDocument, updateDocument, loading, error, success } = useFirestoreOperations<T>(collectionPath);
+  const { addDocument, updateDocument, loading, error, success } = useRealtimeOperations<T>(collectionPath);
 
   useEffect(() => {
     if (initialItem) {
@@ -62,14 +62,27 @@ const GenericItemModal = <T extends ManagedItem>({
     }
 
     if (initialItem) {
-      await updateDocument(initialItem.id, formData);
+      const changedFields: Partial<Omit<T, 'id'>> = {};
+      Object.keys(formData).forEach(key => {
+        // Compara o valor atual do formulário com o valor inicial do item
+        if (formData[key as keyof Omit<T, 'id'>] !== (initialItem as any)[key]) {
+          (changedFields as any)[key] = formData[key as keyof Omit<T, 'id'>];
+        }
+      });
+
+      if (Object.keys(changedFields).length > 0) {
+        await updateDocument(initialItem.id, changedFields);
+      } else {
+        onClose();
+        return;
+      }
     } else {
       await addDocument(formData);
     }
 
     if (success) {
       alert(`${initialItem ? 'Alterações salvas' : formConfig.title.replace('Adicionar ', '')} com sucesso!`);
-      onItemSaved(); 
+      onItemSaved();
       onClose(); 
     } else if (error) {
       alert(`Erro ao salvar: ${error}`);

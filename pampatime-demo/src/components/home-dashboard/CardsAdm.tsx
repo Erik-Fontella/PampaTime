@@ -1,4 +1,4 @@
-import useFirestoreCollection from '@/hooks/useFirestoreCollection';
+import useRealtimeCollection from '@/hooks/useRealtimeCollection';
 import { TeacherItem, BookingItem, CourseItem, SubjectItem } from '@/types/management';
 import { Link } from 'react-router-dom';
 import React from 'react';
@@ -13,10 +13,10 @@ import {
 const CardsAdm = () => { 
     const userName = 'Usuário';
 
-    const { data: professoresData, loading: professoresLoading } = useFirestoreCollection<TeacherItem>('professores', { listenLive: true });
-    const { data: salasData, loading: salasLoading } = useFirestoreCollection<BookingItem>('salas', { listenLive: true });
-    const { data: cursosData, loading: cursosLoading } = useFirestoreCollection<CourseItem>('cursos', { listenLive: true });
-    const { data: disciplinasData, loading: disciplinasLoading } = useFirestoreCollection<SubjectItem>('disciplinas', { listenLive: true });
+    const { data: professoresData, loading: professoresLoading } = useRealtimeCollection<TeacherItem>('professores', { listenLive: true });
+    const { data: salasData, loading: salasLoading } = useRealtimeCollection<BookingItem>('salas', { listenLive: true });
+    const { data: cursosData, loading: cursosLoading } = useRealtimeCollection<CourseItem>('cursos', { listenLive: true });
+    const { data: disciplinasData, loading: disciplinasLoading } = useRealtimeCollection<SubjectItem>('disciplinas', { listenLive: true });
 
     return (
         <section className="px-8 py-6 font-ubuntu">
