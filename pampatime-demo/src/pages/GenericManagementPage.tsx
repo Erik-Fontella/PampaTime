@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Header from "@/components/Header"; 
-import Footer from "@/components/Footer"; 
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import SearchFilter from "@/components/management/SearchFilter";
 import GenericTable, { TableColumn } from "@/components/management/GenericTable";
 import ManagementNav from "@/components/management/ManagementNav";
+import GenericItemModal from "@/components/management/GenericItemModal";
 import { ManagedItem } from "@/types/management";
-import useFirestoreCollection from "@/hooks/useFirestoreCollection";
-import useFirestoreOperations from "@/hooks/useFirestoreOperations";
+import useRealtimeCollection from "@/hooks/useRealtimeCollection";
+import useRealtimeOperations from "@/hooks/useRealtimeOperations";
 import styles from '@/styles/management/GenericManagementPage.module.css';
-import GenericAddModal from "@/components/management/GenericAddModal";
 import { entityFormConfigs } from '@/config/formConfig';
+import Papa from 'papaparse';
 
 interface GenericManagementPageProps<T extends ManagedItem> {
   title: string;
-  collectionPath: string;
+  collectionPath: string; 
   searchPlaceholder?: string;
   columns: TableColumn<T>[];
   addBtnLabel: string;
@@ -28,11 +29,12 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     addBtnLabel,
   } = props;
 
-  const { data: fetchedData, loading, error: fetchError } = useFirestoreCollection<any>(collectionPath, { listenLive: true });
-  const { deleteDocument, updateDocument, loading: opLoading, error: opError, success: opSuccess } = useFirestoreOperations<any>(collectionPath);
+  const { data: fetchedData, loading, error: fetchError } = useRealtimeCollection<any>(collectionPath);
+  const { deleteDocument, updateDocument, addDocument, bulkAddDocuments, loading: opLoading, error: opError, success: opSuccess } = useRealtimeOperations<any>(collectionPath);
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<any | null>(null);
   const currentFormConfig = entityFormConfigs[collectionPath];
 
   useEffect(() => {
@@ -53,12 +55,20 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     setFilteredData(filtered);
   };
 
-  const handleItemAdded = () => {
-    console.log(`${currentFormConfig?.title.replace('Adicionar ', '')} adicionado(a) com sucesso!`);
+  const handleItemSaved = () => {
+    console.log(`Item em ${collectionPath} salvo com sucesso!`);
+    setIsModalOpen(false);
+    setItemToEdit(null);
   };
 
   const handleEdit = (item: any) => {
-    alert(`Editar item: ${item.name || (item as any).title || item.id}`);
+    setItemToEdit(item);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setItemToEdit(null);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (itemId: string) => {
@@ -71,7 +81,28 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       }
     }
   };
-
+  
+  const handleCsvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          const data = results.data as any[]; 
+          if (data.length > 0) {
+            console.log("Dados do CSV parseados:", data);
+            const dataToSave = data.map(item => {
+              const { id, ...rest } = item;
+              return rest;
+            });
+            bulkAddDocuments(dataToSave);
+          }
+        },
+      });
+    }
+  };
   const dynamicColumns = columns.map(col => {
     if (col.key === 'id' && col.header === 'Ações') {
       return {
@@ -130,7 +161,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Header />
         <div className={`${styles.managementBar}`}>
-          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4"> 
+          <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
             <div className={styles.managementNavContainer}>
               <ManagementNav className="mx-auto" />
             </div>
@@ -162,12 +193,24 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
             <ManagementNav className="mx-auto" />
           </div>
           <div className={styles.searchAddContainer}>
+            {/* O campo de busca */}
             <SearchFilter
               onSearch={handleSearch}
               placeholder={searchPlaceholder}
             />
+            
+            <label className="w-64 px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition flex items-center justify-center gap-2 cursor-pointer">
+              <span className="text-sm font-semibold">Importar CSV</span>
+              <input 
+                type="file" 
+                accept=".csv" 
+                onChange={handleCsvUpload} 
+                className="hidden" 
+              />
+            </label>
+            
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleAdd}
               className="w-64 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -178,7 +221,6 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
           </div>
         </div>
       </div>
-
       <main className="flex-grow container mx-auto px-4 py-10 mt-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         {filteredData.length === 0 ? (
@@ -188,14 +230,14 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
         )}
       </main>
       <Footer />
-
       {currentFormConfig && (
-        <GenericAddModal
+        <GenericItemModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           collectionPath={collectionPath}
           formConfig={currentFormConfig}
-          onItemAdded={handleItemAdded}
+          initialItem={itemToEdit}
+          onItemSaved={handleItemSaved}
         />
       )}
     </div>

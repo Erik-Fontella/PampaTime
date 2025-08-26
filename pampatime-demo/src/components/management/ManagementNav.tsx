@@ -12,6 +12,7 @@ const navLinks: NavItem[] = [
   { label: 'Sala', path: '/salas' },
   { label: 'Curso', path: '/cursos' },
   { label: 'Disciplinas', path: '/disciplinas' },
+  { label: 'Semestres', path: '/semestres' },
 ];
 
 

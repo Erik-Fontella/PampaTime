@@ -1,4 +1,5 @@
 import React from "react";
+import {FieldValue} from "firebase/firestore";
 
 export interface ManagedItem {
   id: string;
@@ -64,4 +65,9 @@ export interface EntityFormConfig<T extends ManagedItem> {
   title: string;
   fields: FormField[];
   defaultValues: Omit<T, 'id'>;
+}
+
+export interface SemesterItem extends ManagedItem {
+  name: string;
+  lastModified: FieldValue | Date;
 }

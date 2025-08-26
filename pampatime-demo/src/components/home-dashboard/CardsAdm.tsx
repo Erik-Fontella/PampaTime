@@ -1,4 +1,4 @@
-import useFirestoreCollection from '@/hooks/useFirestoreCollection';
+import useRealtimeCollection from '@/hooks/useRealtimeCollection';
 import { TeacherItem, BookingItem, CourseItem, SubjectItem } from '@/types/management';
 import { Link } from 'react-router-dom';
 import React from 'react';
@@ -13,10 +13,10 @@ import {
 const CardsAdm = () => { 
     const userName = 'Usuário';
 
-    const { data: professoresData, loading: professoresLoading } = useFirestoreCollection<TeacherItem>('professores', { listenLive: true });
-    const { data: salasData, loading: salasLoading } = useFirestoreCollection<BookingItem>('salas', { listenLive: true });
-    const { data: cursosData, loading: cursosLoading } = useFirestoreCollection<CourseItem>('cursos', { listenLive: true });
-    const { data: disciplinasData, loading: disciplinasLoading } = useFirestoreCollection<SubjectItem>('disciplinas', { listenLive: true });
+    const { data: professoresData, loading: professoresLoading } = useRealtimeCollection<TeacherItem>('professores', { listenLive: true });
+    const { data: salasData, loading: salasLoading } = useRealtimeCollection<BookingItem>('salas', { listenLive: true });
+    const { data: cursosData, loading: cursosLoading } = useRealtimeCollection<CourseItem>('cursos', { listenLive: true });
+    const { data: disciplinasData, loading: disciplinasLoading } = useRealtimeCollection<SubjectItem>('disciplinas', { listenLive: true });
 
     return (
         <section className="px-8 py-6 font-ubuntu">
@@ -35,7 +35,7 @@ const CardsAdm = () => {
                     <h3 className="text-xl font-semibold text-gray-900 mb-1">Horários</h3>
                     <p className="text-gray-600 mb-4">Organize e Visualize os horários</p>
                     <Link
-                        to="/salas"
+                        to="/semestres"
                         className="border border-black px-4 py-2 rounded-full font-medium hover:bg-green-500 hover:text-white transition text-center"
                     >
                         Ver Detalhes

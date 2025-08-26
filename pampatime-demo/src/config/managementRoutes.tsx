@@ -1,14 +1,5 @@
-import React from 'react'; 
-import { ManagedItem, BookingItem, TeacherItem, CourseItem, SubjectItem } from "@/types/management"; 
-const handleEditAction = (item: ManagedItem) => {
-  alert(`Editar: ${item.name || item.title || item.id}`);
-};
-
-const handleDeleteAction = (itemId: string) => {
-  if (window.confirm("Tem certeza que deseja excluir?")) {
-    alert(`Excluir item com ID: ${itemId}`);
-  }
-};
+import React from 'react';
+import { ManagedItem, BookingItem, TeacherItem, CourseItem, SubjectItem, SemesterItem } from '@/types/management';
 
 export interface ManagementRouteConfig<T extends ManagedItem> {
   path: string;
@@ -27,17 +18,13 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     collectionPath: "salas",
     searchPlaceholder: "Buscar...",
     addBtnLabel: "Adicionar Sala",
-    onAddClick: () => alert("Abrir formulário para adicionar sala!"), 
+    onAddClick: () => alert("Abrir formulário para adicionar sala!"),
     columns: [
+      { key: "code", header: "Código" },
       { key: "name", header: "Nome da Sala" },
-      { key: "capacity", header: "Capacidade" },
       { key: "type", header: "Tipo" },
-      { key: "id", header: "Ações", render: (item: BookingItem) => ( 
-        <div className="flex gap-2">
-          <button onClick={() => handleEditAction(item)} className="text-blue-600 hover:underline">Editar</button>
-          <button onClick={() => handleDeleteAction(item.id)} className="text-red-600 hover:underline">Excluir</button>
-        </div>
-      )}
+      { key: "capacity", header: "Capacidade" },
+      { key: "id", header: "Ações" } 
     ],
   },
   professores: {
@@ -50,12 +37,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     columns: [
       { key: "name", header: "Nome" },
       { key: "email", header: "Email" },
-      { key: "id", header: "Ações", render: (item: TeacherItem) => (
-        <div className="flex gap-2">
-          <button onClick={() => handleEditAction(item)} className="text-blue-600 hover:underline">Editar</button>
-          <button onClick={() => handleDeleteAction(item.id)} className="text-red-600 hover:underline">Excluir</button>
-        </div>
-      )}
+      { key: "id", header: "Ações" }
     ],
   },
   cursos: {
@@ -67,13 +49,8 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     onAddClick: () => alert("Abrir formulário para adicionar curso!"),
     columns: [
       { key: "code", header: "Código" },
-      { key: "name", header: "Nome do Curso" },
-      { key: "id", header: "Ações", render: (item: CourseItem) => (
-        <div className="flex gap-2">
-          <button onClick={() => handleEditAction(item)} className="text-blue-600 hover:underline">Editar</button>
-          <button onClick={() => handleDeleteAction(item.id)} className="text-red-600 hover:underline">Excluir</button>
-        </div>
-      )}
+      { key: "name", header: "Nome" },
+      { key: "id", header: "Ações" }
     ],
   },
   disciplinas: {
@@ -89,12 +66,40 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
       { key: "course", header: "Curso" },
       { key: "chTeorica", header: "CH Teórica" },
       { key: "chPratica", header: "CH Prática" },
-      { key: "id", header: "Ações", render: (item: SubjectItem) => (
-        <div className="flex gap-2">
-          <button onClick={() => handleEditAction(item)} className="text-blue-600 hover:underline">Editar</button>
-          <button onClick={() => handleDeleteAction(item.id)} className="text-red-600 hover:underline">Excluir</button>
-        </div>
-      )}
+      { key: "id", header: "Ações" }
     ],
+  },
+  semestres: {
+    title: 'Histórico de Semestres',
+    path: "/semestres",
+    collectionPath: "semestres",
+    searchPlaceholder: "Pesquisar semestres...",
+    addBtnLabel: "Adicionar Novo Horário",
+    onAddClick: () => alert("Abrir formulário para adicionar semestre!"),
+    columns: [
+      { key: "name", header: "NOME DO SEMESTRE" },
+      {
+        key: "lastModified",
+        header: "ÚLTIMA MODIFICAÇÃO",
+        render: (item: SemesterItem) => {
+          const { lastModified } = item;
+          let date: Date | null = null;
+
+          if (typeof lastModified === 'number') {
+            date = new Date(lastModified);
+          } else if (lastModified instanceof Date) {
+            date = lastModified;
+          }
+
+          if (date) {
+            const formattedDate = date.toLocaleDateString('pt-BR');
+            const formattedTime = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return `${formattedDate} ${formattedTime}`;
+          }
+          return 'N/A';
+        },
+      },
+      { key: "id", header: "Ações" } 
+    ]
   },
 };
