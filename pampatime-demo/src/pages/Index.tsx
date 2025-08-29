@@ -1,61 +1,78 @@
-// src/pages/Index.tsx
-import React, { useState, useRef } from 'react';
+// src/pages/Index.tsx - Versão corrigida com sincronização funcional
+import React, { useRef, useCallback } from 'react';
+import SidePanel from '@/components/calendar/SidePanel';
+import Timetable from '@/components/calendar/Timetable';
 import Header from '@/components/Header';
-import SidePanel from '@/components/SidePanel';
-import Timetable from '@/components/Timetable';
-import { Event } from '@/types/Event';
+import { useEvents } from '@/hooks/useEvents';
+import { CalendarEvent } from '@/types/Event';
 
 const Index = () => {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const timetableRef = useRef<any>(null);
+  
+  // Centralized event management com callback para sincronização
+  const eventManager = useEvents();
 
   // Handle event click from calendar
-  const handleEventClick = (event: Event) => {
-    setSelectedEvent(event);
-  };
+  const handleEventClick = useCallback((event: CalendarEvent) => {
+    console.log('Index: Event clicked', event);
+    eventManager.selectEvent(event);
+  }, [eventManager]);
 
-  // Handle event update from form
-  const handleEventUpdate = (updatedEvent: Event) => {
-    // Update the event in the calendar
-    if (timetableRef.current && timetableRef.current.updateEvent) {
-      timetableRef.current.updateEvent(updatedEvent);
-    }
-    // Clear selection after update
-    setSelectedEvent(null);
-  };
+  // Handle real-time event changes (drag, resize)
+  const handleEventChange = useCallback((updatedEvent: CalendarEvent) => {
+    console.log('Index: Event changed in real-time', updatedEvent);
+    eventManager.updateEvent(updatedEvent);
+  }, [eventManager]);
 
   // Handle event add from form
-  const handleEventAdd = (newEvent: Event) => {
-    // Add the event to the calendar
-    if (timetableRef.current && timetableRef.current.addEvent) {
-      timetableRef.current.addEvent(newEvent);
-    }
-  };
+  const handleEventAdd = useCallback((newEvent: CalendarEvent) => {
+    console.log('Index: Adding new event via form', newEvent);
+    eventManager.addEvent(newEvent);
+  }, [eventManager]);
+
+  // Handle event update from form
+  const handleEventUpdate = useCallback((updatedEvent: CalendarEvent) => {
+    console.log('Index: Updating event via form', updatedEvent);
+    eventManager.updateEvent(updatedEvent);
+    // Clear selection after update
+    eventManager.selectEvent(null);
+  }, [eventManager]);
 
   // Handle event delete from form
-  const handleEventDelete = (eventId: string | number) => {
-    // Delete the event from the calendar
-    if (timetableRef.current && timetableRef.current.deleteEvent) {
-      timetableRef.current.deleteEvent(eventId);
-    }
-    // Clear selection after delete
-    setSelectedEvent(null);
-  };
+  const handleEventDelete = useCallback((eventId: string | number) => {
+    console.log('Index: Deleting event', eventId);
+    eventManager.deleteEvent(eventId);
+  }, [eventManager]);
 
   // Clear selection
-  const handleClearSelection = () => {
-    setSelectedEvent(null);
-  };
+  const handleClearSelection = useCallback(() => {
+    eventManager.selectEvent(null);
+  }, [eventManager]);
+
+  // Handle events list changes from Timetable (quando eventos são arrastados do painel lateral)
+  const handleEventsChange = useCallback((newEvents: CalendarEvent[]) => {
+    console.log('Index: Events list updated from Timetable', newEvents.length);
+    
+    // Encontrar novos eventos (que não existem no estado atual)
+    const currentEventIds = new Set(eventManager.events.map(e => e.id));
+    const newEventsToAdd = newEvents.filter(event => !currentEventIds.has(event.id));
+    
+    // Adicionar apenas os novos eventos
+    newEventsToAdd.forEach(newEvent => {
+      console.log('Index: Adding new event from drag & drop', newEvent);
+      eventManager.addEvent(newEvent);
+    });
+  }, [eventManager]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       <Header />
-      
       <main className="flex-1 p-2 md:p-4 min-h-0 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 md:gap-4 h-full">
-          <div className="lg:col-span-1 h-full overflow-auto">
+        <div className="flex flex-col lg:flex-row gap-2 md:gap-4 h-full">
+          {/* Side Panel */}
+          <div className="w-full lg:w-80 xl:w-96 2xl:w-[430px] flex-shrink-0 h-[50vh] lg:h-full overflow-hidden">
             <SidePanel 
-              selectedEvent={selectedEvent}
+              selectedEvent={eventManager.selectedEvent}
               onEventUpdate={handleEventUpdate}
               onEventAdd={handleEventAdd}
               onEventDelete={handleEventDelete}
@@ -63,10 +80,15 @@ const Index = () => {
             />
           </div>
           
-          <div className="lg:col-span-3 h-full">
+          {/* Timetable */}
+          <div className="flex-1 min-w-0 h-[50vh] lg:h-full">
             <Timetable 
               ref={timetableRef}
+              events={eventManager.events}
+              conflicts={eventManager.conflicts}
               onEventClick={handleEventClick}
+              onEventChange={handleEventChange}
+              onEventsChange={handleEventsChange}
             />
           </div>
         </div>

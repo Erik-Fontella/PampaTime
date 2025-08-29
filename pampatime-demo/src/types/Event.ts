@@ -1,49 +1,89 @@
-// src/types/Event.ts
-export interface Event {
+// src/types/Event.ts - Fixed version
+export interface CalendarEvent {
   id: string | number;
   title: string;
   start: Date | string;
   end?: Date | string;
   room?: string;
   professor?: string;
-  semester?: string;  // Adicionado campo semestre
-  class?: string;     // Adicionado campo turma
-  type?: 'calculus' | 'math' | 'algorithms' | 'practices' | 'challenges';
+  semester?: string;
+  class?: string;
+  type?: string; // Modalidade (Teórica, Prática, Assíncrona)
   backgroundColor?: string;
   borderColor?: string;
   textColor?: string;
-  allDay?: boolean;
-  extendedProps?: {
-    room?: string;
-    professor?: string;
-    type?: string;
-    roomInfo?: string;
-    semester?: string;
-    class?: string;
-  };
+  allDay?: boolean; // Make this optional to match your usage
 }
 
-// Event type colors mapping
-export const EVENT_TYPE_COLORS = {
-  calculus: { bg: '#d1fae5', border: '#10b981' },
-  math: { bg: '#dbeafe', border: '#3b82f6' },
-  algorithms: { bg: '#fef3c7', border: '#f59e0b' },
-  practices: { bg: '#e9d5ff', border: '#8b5cf6' },
-  challenges: { bg: '#fecaca', border: '#f87171' }
-} as const;
+export interface EventColors {
+  bg: string;
+  border: string;
+  text: string;
+}
 
-// Helper function to get colors for event type
-export const getEventTypeColors = (type: keyof typeof EVENT_TYPE_COLORS = 'math') => {
-  return EVENT_TYPE_COLORS[type] || EVENT_TYPE_COLORS.math;
+// Cores específicas para modalidades
+const MODALIDADE_COLORS: { [key: string]: EventColors } = {
+  'Teórica': {
+    bg: '#dbeafe',     // blue-100
+    border: '#3b82f6', // blue-500
+    text: '#1e3a8a'    // blue-900
+  },
+  'Prática': {
+    bg: '#dcfce7',     // green-100
+    border: '#22c55e', // green-500
+    text: '#14532d'    // green-900
+  },
+  'Assíncrona': {
+    bg: '#fef3c7',     // yellow-100
+    border: '#eab308', // yellow-500
+    text: '#713f12'    // yellow-900
+  }
+};
+
+// Cores para conflitos
+export const CONFLICT_COLORS: EventColors = {
+  bg: '#fee2e2',       // red-100
+  border: '#dc2626',   // red-600
+  text: '#7f1d1d'      // red-900
+};
+
+// Cor padrão para modalidades não reconhecidas
+const DEFAULT_COLORS: EventColors = {
+  bg: '#f3f4f6',       // gray-100
+  border: '#9ca3af',   // gray-400
+  text: '#374151'      // gray-700
+};
+
+// Função principal para obter cores baseadas na modalidade
+export const getEventTypeColors = (modalidade: string = ''): EventColors => {
+  const normalizedModalidade = modalidade.trim();
+  
+  if (MODALIDADE_COLORS[normalizedModalidade]) {
+    return MODALIDADE_COLORS[normalizedModalidade];
+  }
+  
+  return DEFAULT_COLORS;
+};
+
+// Helper function to apply colors to an event (sempre usa cores da modalidade, não do conflito)
+export const applyEventColors = (event: Partial<CalendarEvent>): CalendarEvent => {
+  const colors = getEventTypeColors(event.type || '');
+  
+  return {
+    ...event,
+    backgroundColor: colors.bg,
+    borderColor: colors.border,
+    textColor: colors.text,
+  } as CalendarEvent;
 };
 
 // Fixed week dates - first week of 2020 (January 6-10, 2020)
 export const FIXED_WEEK_DATES = {
-  monday: new Date(2020, 0, 6),    // January 6, 2020
-  tuesday: new Date(2020, 0, 7),   // January 7, 2020
-  wednesday: new Date(2020, 0, 8), // January 8, 2020
-  thursday: new Date(2020, 0, 9),  // January 9, 2020
-  friday: new Date(2020, 0, 10)    // January 10, 2020
+  monday: new Date(2020, 0, 6),
+  tuesday: new Date(2020, 0, 7),
+  wednesday: new Date(2020, 0, 8),
+  thursday: new Date(2020, 0, 9),
+  friday: new Date(2020, 0, 10)
 } as const;
 
 // Helper function to get fixed date for a day
@@ -64,7 +104,7 @@ export const getFixedDateForDay = (dayName: string): Date => {
   return dayMap[dayName] || FIXED_WEEK_DATES.monday;
 };
 
-// Helper function to create event with fixed date
+// Helper function to create event with fixed date and auto-generated colors
 export const createEventWithFixedDate = (
   title: string,
   dayName: string,
@@ -73,14 +113,13 @@ export const createEventWithFixedDate = (
   options: {
     room?: string;
     professor?: string;
-    semester?: string;  // Adicionado parâmetro semestre
-    class?: string;     // Adicionado parâmetro turma
-    type?: keyof typeof EVENT_TYPE_COLORS;
+    semester?: string;
+    class?: string;
+    type?: string; // Modalidade
     id?: string | number;
   } = {}
-): Event => {
+): CalendarEvent => {
   const baseDate = getFixedDateForDay(dayName);
-  const colors = getEventTypeColors(options.type);
   
   // Parse start time
   const [startHour, startMinute] = startTime.split(':').map(Number);
@@ -92,28 +131,22 @@ export const createEventWithFixedDate = (
   const endDate = new Date(baseDate);
   endDate.setHours(endHour, endMinute, 0, 0);
   
-  return {
+  // Create base event
+  const baseEvent: Partial<CalendarEvent> = {
     id: options.id || `event-${Date.now()}-${Math.random()}`,
     title,
     start: startDate,
     end: endDate,
     room: options.room,
     professor: options.professor,
-    semester: options.semester,  // Incluído no objeto de retorno
-    class: options.class,        // Incluído no objeto de retorno
-    type: options.type || 'math',
-    backgroundColor: colors.bg,
-    borderColor: colors.border,
-    textColor: '#000000',
+    semester: options.semester,
+    class: options.class,
+    type: options.type || '', // Modalidade
     allDay: false,
-    extendedProps: {
-      room: options.room,
-      professor: options.professor,
-      type: options.type || 'math',
-      semester: options.semester,
-      class: options.class
-    }
   };
+  
+  // Apply colors and return complete event
+  return applyEventColors(baseEvent);
 };
 
 // Helper function to snap times to half-hour slots (7:30 based)
@@ -122,10 +155,8 @@ export const snapToHalfHour = (date: Date): Date => {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   
-  // If minutes are less than 15, snap to the previous :30
   if (minutes < 15) {
     if (hours === 0) {
-      // Special case: very early morning
       roundedDate.setHours(0);
       roundedDate.setMinutes(30, 0, 0);
     } else {
@@ -133,11 +164,9 @@ export const snapToHalfHour = (date: Date): Date => {
       roundedDate.setMinutes(30, 0, 0);
     }
   } 
-  // If minutes are between 15 and 45, snap to the current hour's :30
   else if (minutes >= 15 && minutes < 45) {
     roundedDate.setMinutes(30, 0, 0);
   } 
-  // If minutes are 45 or more, snap to the next hour's :30
   else {
     roundedDate.setHours(hours + 1);
     roundedDate.setMinutes(30, 0, 0);
