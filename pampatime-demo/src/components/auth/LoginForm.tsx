@@ -213,13 +213,7 @@ const LoginForm: React.FC = () => {
               </button>
               
               <div className="text-sm text-gray-600">
-                Não tem uma conta?{' '}
-                <Link 
-                  to="/register" 
-                  className="text-green-600 hover:text-green-700 hover:underline font-medium"
-                >
-                  Cadastre-se
-                </Link>
+                Precisa de acesso? Entre em contato com o coordenador geral.
               </div>
             </div>
           </form>
