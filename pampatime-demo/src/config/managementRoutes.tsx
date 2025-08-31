@@ -16,7 +16,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     path: "/salas",
     title: "Gerenciar Salas",
     collectionPath: "salas",
-    searchPlaceholder: "Buscar...",
+    searchPlaceholder: "Buscar sala...",
     addBtnLabel: "Adicionar Sala",
     onAddClick: () => alert("Abrir formulário para adicionar sala!"),
     columns: [
@@ -31,7 +31,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     path: "/professores",
     title: "Gerenciar Professores",
     collectionPath: "professores",
-    searchPlaceholder: "Buscar...",
+    searchPlaceholder: "Buscar professor...",
     addBtnLabel: "Adicionar Professor",
     onAddClick: () => alert("Abrir formulário para adicionar professor!"),
     columns: [
@@ -44,7 +44,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     path: "/cursos",
     title: "Gerenciar Cursos",
     collectionPath: "cursos",
-    searchPlaceholder: "Buscar...",
+    searchPlaceholder: "Buscar curso...",
     addBtnLabel: "Adicionar Curso",
     onAddClick: () => alert("Abrir formulário para adicionar curso!"),
     columns: [
@@ -57,7 +57,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     path: "/disciplinas",
     title: "Gerenciar Disciplinas",
     collectionPath: "disciplinas",
-    searchPlaceholder: "Buscar...",
+    searchPlaceholder: "Buscar disciplina...",
     addBtnLabel: "Adicionar Disciplina",
     onAddClick: () => alert("Abrir formulário para adicionar disciplina!"),
     columns: [
@@ -73,7 +73,7 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     title: 'Histórico de Semestres',
     path: "/semestres",
     collectionPath: "semestres",
-    searchPlaceholder: "Pesquisar semestres...",
+    searchPlaceholder: "Buscar semestre...",
     addBtnLabel: "Adicionar Novo Horário",
     onAddClick: () => alert("Abrir formulário para adicionar semestre!"),
     columns: [

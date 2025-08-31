@@ -8,7 +8,6 @@ import GenericItemModal from "@/components/management/GenericItemModal";
 import { ManagedItem } from "@/types/management";
 import useRealtimeCollection from "@/hooks/useRealtimeCollection";
 import useRealtimeOperations from "@/hooks/useRealtimeOperations";
-import styles from '@/styles/management/GenericManagementPage.module.css';
 import { entityFormConfigs } from '@/config/formConfig';
 import Papa from 'papaparse';
 
@@ -103,6 +102,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
       });
     }
   };
+
   const dynamicColumns = columns.map(col => {
     if (col.key === 'id' && col.header === 'Ações') {
       return {
@@ -132,12 +132,8 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Header />
-        <div className={`${styles.managementBar}`}>
           <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
-            <div className={styles.managementNavContainer}>
               <ManagementNav className="mx-auto" />
-            </div>
-            <div className={styles.searchAddContainer}>
               <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} />
               <button className="w-64 px-6 py-2 bg-green-500 text-white rounded-md flex items-center justify-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -145,9 +141,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
                 </svg>
                 {addBtnLabel}
               </button>
-            </div>
           </div>
-        </div>
         <main className="flex-grow container mx-auto px-4 py-10 mt-12 text-center text-lg">
           {loading ? `Carregando ${title.toLowerCase()}...` : "Processando operação..."}
         </main>
@@ -160,12 +154,8 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Header />
-        <div className={`${styles.managementBar}`}>
           <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
-            <div className={styles.managementNavContainer}>
               <ManagementNav className="mx-auto" />
-            </div>
-            <div className={styles.searchAddContainer}>
               <SearchFilter placeholder={searchPlaceholder} onSearch={() => {}} />
               <button className="w-64 px-6 py-2 bg-green-500 text-white rounded-md flex items-center justify-center gap-2 whitespace-nowrap opacity-50 cursor-not-allowed" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -173,9 +163,7 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
                 </svg>
                 {addBtnLabel}
               </button>
-            </div>
           </div>
-        </div>
         <main className="flex-grow container mx-auto px-4 py-10 mt-12 text-center text-red-600 text-lg">
           Erro: {fetchError || opError}
         </main>
@@ -187,44 +175,42 @@ const GenericManagementPage = (props: GenericManagementPageProps<any>) => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <div className={`${styles.managementBar}`}>
-        <div className="container mx-auto flex flex-col md:flex-row md:items-center justify-end gap-4">
-          <div className={styles.managementNavContainer}>
-            <ManagementNav className="mx-auto" />
-          </div>
-          <div className={styles.searchAddContainer}>
-            {/* O campo de busca */}
+        <div className="container mx-auto flex flex-col md:flex-row md:items-center gap-4 pt-5">
+          <ManagementNav className="mx-auto" />
+          <div className="flex flex-col gap-2 w-full max-w-md">
             <SearchFilter
               onSearch={handleSearch}
               placeholder={searchPlaceholder}
             />
-            
-            <label className="w-64 px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition flex items-center justify-center gap-2 cursor-pointer">
-              <span className="text-sm font-semibold">Importar CSV</span>
-              <input 
-                type="file" 
-                accept=".csv" 
-                onChange={handleCsvUpload} 
-                className="hidden" 
-              />
-            </label>
-            
-            <button
-              onClick={handleAdd}
-              className="w-64 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center justify-center gap-2 whitespace-nowrap"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              {addBtnLabel}
-            </button>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <label className="flex-1 px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition flex items-center justify-center gap-2 cursor-pointer">
+                <span className="text-sm font-semibold">Importar CSV</span>
+                <input 
+                  type="file" 
+                  accept=".csv" 
+                  onChange={handleCsvUpload} 
+                  className="hidden" 
+                />
+              </label>
+              
+              <button
+                onClick={handleAdd}
+                className="flex-1 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center justify-center gap-2 whitespace-nowrap"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                {addBtnLabel}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+
       <main className="flex-grow container mx-auto px-4 py-10 mt-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         {filteredData.length === 0 ? (
-           <p className="text-gray-500 text-center py-8">Nenhum {title.toLowerCase().replace('gerenciar ', '').replace(/s$/, '')} encontrado.</p>
+           <p className="text-gray-500 text-center py-8">Nenhum registro de {title.toLowerCase().replace('gerenciar ', '').replace(/s$/, '')} encontrado.</p>
         ) : (
            <GenericTable data={filteredData} columns={dynamicColumns} />
         )}

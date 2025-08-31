@@ -1,18 +1,17 @@
-// src/pages/History.tsx
-
 import React from 'react';
-import PageLayout from '../components/ui/PageLayout'; // Importação do PageLayout
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import HistoryToolbar from '@/components/history/HistoryToolbar';
 import WeeklyCalendar from '@/components/history/WeeklyCalendar';
 import EditHistory from '@/components/history/EditHistory';
 
 const History = () => {
   return (
-    <PageLayout>
-      {/* O PageLayout já cuida do Header e do Footer */}
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
       <div className="flex flex-1 min-h-0">
-        <main className="flex flex-col flex-1 overflow-hidden">
-          <HistoryToolbar /> {/* <-- AQUI ESTÁ A ÚNICA CHAMADA DA TOOLBAR */}
+        <main className="flex flex-col flex-1 overflow-hidden"> 
+          <HistoryToolbar />
           <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 overflow-auto">
               <WeeklyCalendar />
@@ -21,7 +20,8 @@ const History = () => {
           </div>
         </main>
       </div>
-    </PageLayout>
+      <Footer />
+    </div>
   );
 };
 
