@@ -1,32 +1,47 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const HistoryToolbar = () => {
-  const navigateWeek = (direction: string) => {
-    console.log("Mudando semana:", direction);
-  };
+
+
+interface HistoryToolbarProps {
+    logCount: number; // Quantidade total de logs
+    currentLogIndex: number; // Índice do log sendo visualizado
+    currentLogDate: string; // Data do log sendo visualizado
+    onNavigate: (direction: 'prev' | 'next') => void; // Função para navegar pelos logs
+    onRestore: () => void; // Função para restaurar a versão
+}
+
+const HistoryToolbar = ({
+    logCount,
+    currentLogIndex,
+    currentLogDate,
+    onNavigate,
+    onRestore
+}: HistoryToolbarProps) => {
 
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
       <div className="text-lg font-medium text-gray-800">
-        25/04/2025 - Sexta-feira
+        {currentLogDate}
       </div>
 
       <div className="flex items-center gap-4">
         <button className="text-gray-600 hover:text-black">
-          2 edições
+          {logCount} edições
         </button>
 
         <button
-          onClick={() => navigateWeek("prev")}
-          className="p-2 border border-gray-200 rounded hover:bg-gray-100"
-        >
+           onClick={() => onNavigate('prev')}
+                        className="p-2 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50"
+                        disabled={currentLogIndex >= logCount - 1} 
+                    >
           <ChevronUp />
         </button>
 
         <button
-          onClick={() => navigateWeek("next")}
-          className="p-2 border border-gray-200 rounded hover:bg-gray-100"
-        >
+           onClick={() => onNavigate('next')}
+                        className="p-2 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50"
+                        disabled={currentLogIndex <= 0} 
+                    >
           <ChevronDown />
         </button>
 

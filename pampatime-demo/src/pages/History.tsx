@@ -1,9 +1,9 @@
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import HistoryToolbar from '@/components/history/HistoryToolbar';
 import WeeklyCalendar from '@/components/history/WeeklyCalendar';
 import EditHistory from '@/components/history/EditHistory';
+import HistoryToolbar from '@/components/history/HistoryToolbar';
 
 const History = () => {
   return (
@@ -11,7 +11,7 @@ const History = () => {
       <Header />
       <div className="flex flex-1 min-h-0">
         <main className="flex flex-col flex-1 overflow-hidden"> 
-          <HistoryToolbar />
+           <HistoryToolbar/>
           <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 overflow-auto">
               <WeeklyCalendar />

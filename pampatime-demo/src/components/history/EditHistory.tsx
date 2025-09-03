@@ -1,5 +1,3 @@
-// src/components/history/EditHistory.tsx
-
 import React from 'react';
 import useRealtimeCollection from '@/hooks/useRealtimeCollection';
 import { HistoryLogItem } from '@/types/management';
@@ -27,7 +25,7 @@ const EditHistory = () => {
   }
 
   return (
-    <div className="w-80 h-full sticky top-0 overflow-y-auto bg-white border-l border-gray-200 px-6 pt-[90px]">
+    <div className="w-80 h-full sticky top-0 overflow-y-auto bg-white border-l border-gray-200 px-6 pt-5">
       <div className="flex items-center gap-2 mb-6">
         <ClockIcon />
         <h2 className="text-lg font-semibold text-gray-900">Histórico de edições</h2>
