@@ -7,7 +7,7 @@ const HomeDashboard = () => {
     <>
       <Header />
  
-      <main className="min-h-screen px-8 py-6 pt-32 bg-white-50">
+      <main className="min-h-screen px-8 py-6 bg-white-50">
         <CardsAdm />     
       </main>
       <Footer />

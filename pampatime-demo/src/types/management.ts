@@ -71,3 +71,25 @@ export interface SemesterItem extends ManagedItem {
   name: string;
   lastModified: FieldValue | Date;
 }
+export interface TimetableEvent {
+  id: string;
+  day: string;
+  time: string; 
+  title: string;
+  location: string;
+  color: string;
+}
+
+export interface TimetableDay {
+  date: string;
+  dayName: string;
+  events: TimetableEvent[];
+}
+
+export interface HistoryLogItem extends ManagedItem {
+  date: string;
+  time: string;
+  author: string;
+  action: string;
+  timestamp: number; 
+}
