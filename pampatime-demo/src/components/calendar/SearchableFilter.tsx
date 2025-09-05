@@ -1,8 +1,16 @@
-// src/components/SearchableFilter.tsx
-import React, { useState, useRef, useEffect } from 'react';
+// src/components/calendar/SearchableFilter.tsx
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Search, X } from 'lucide-react';
-import academicData from '@/data/academicData.json';
-import type { AcademicData, FilterOption } from '@/types/AcademicData';
+import useRealtimeCollection from '@/hooks/useRealtimeCollection';
+import { TeacherItem, BookingItem, SubjectItem, SemesterItem } from '@/types/management';
+
+type FilterOption = {
+  id: string;
+  display: string;
+  searchText: string;
+  additionalInfo?: string;
+  // tipo?: 'nome' | 'codigo'; // se necessário no futuro
+};
 
 interface SearchableFilterProps {
   label: string;
@@ -31,107 +39,98 @@ const SearchableFilter: React.FC<SearchableFilterProps> = ({
     setSelectedValue(value);
   }, [value]);
 
-  // Função para obter opções baseadas no label
-  const getOptionsFromData = (): FilterOption[] => {
-    const data = academicData as AcademicData;
-    
-    // Se tem options passadas como prop (para horário final filtrado), usar essas
+  // Fontes do RTDB
+  const { data: professores } = useRealtimeCollection<TeacherItem>('professores');
+  const { data: semestres } = useRealtimeCollection<SemesterItem>('semestres');
+  const { data: salas } = useRealtimeCollection<BookingItem>('salas');
+  const { data: disciplinas } = useRealtimeCollection<SubjectItem>('disciplinas');
+  const { data: turmas } = useRealtimeCollection<any>('turmas'); // opcional
+
+  // Listas estáticas
+  const horariosBase = useMemo(() => [
+    '07:30','08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30','20:30','21:30','22:30'
+  ], []);
+  const diasBase = useMemo(() => (
+    ['Segunda','Terça','Quarta','Quinta','Sexta']
+  ), []);
+  const modalidadesBase = useMemo(() => (
+    ['Teórica','Prática','Assíncrona']
+  ), []);
+
+  // Construir opções dinamicamente
+  const currentOptions: FilterOption[] = useMemo(() => {
+    // Caso especial: Horário Final com options calculadas externamente
     if (options.length > 0 && label === 'Horário Final') {
-      return options.map((hora, index) => {
-        const horario = data.horarios.find(h => h.hora === hora);
-        return {
-          id: horario?.id || `hora_${index}`,
-          display: hora,
-          searchText: hora.toLowerCase(),
-          additionalInfo: horario?.periodo || ''
-        };
-      });
+      return options.map((hora, idx) => ({
+        id: `${hora}-${idx}`,
+        display: hora,
+        searchText: hora.toLowerCase(),
+      }));
     }
-    
+
     switch (label) {
       case 'Professor':
-        return data.professores.map(prof => ({
-          id: prof.id,
-          display: prof.nome,
-          searchText: `${prof.nome} ${prof.departamento} ${prof.especialidade}`.toLowerCase(),
-          additionalInfo: `${prof.departamento} - ${prof.especialidade}`
+        return (professores || []).map(p => ({
+          id: p.id,
+          display: p.name,
+          searchText: `${p.name} ${p.email || ''}`.toLowerCase(),
+          additionalInfo: p.email || ''
         }));
-        
+
       case 'Semestre':
-        return data.semestres.map(sem => ({
-          id: sem.id,
-          display: sem.codigo,
-          searchText: `${sem.codigo} ${sem.nome}`.toLowerCase(),
-          additionalInfo: sem.nome
+        return (semestres || []).map(s => ({
+          id: s.id,
+          display: s.name,
+          searchText: `${s.name}`.toLowerCase(),
+          additionalInfo: ''
         }));
-        
+
       case 'Horário Início':
+        return horariosBase.map((h, idx) => ({ id: `h_${idx}`, display: h, searchText: h.toLowerCase() }));
+
       case 'Horário Final':
-        return data.horarios.map(hor => ({
-          id: hor.id,
-          display: hor.hora,
-          searchText: `${hor.hora} ${hor.periodo}`.toLowerCase(),
-          additionalInfo: hor.periodo
-        }));
-        
+        return horariosBase.map((h, idx) => ({ id: `hf_${idx}`, display: h, searchText: h.toLowerCase() }));
+
       case 'Sala':
-        return data.salas.map(sala => ({
-          id: sala.id,
-          display: sala.codigo,
-          searchText: `${sala.codigo} ${sala.nome} ${sala.tipo} ${sala.bloco}`.toLowerCase(),
-          additionalInfo: `${sala.tipo} - Capacidade: ${sala.capacidade}`
+        return (salas || []).map(s => ({
+          id: s.id,
+          display: s.code,
+          searchText: `${s.code} ${s.name || ''} ${s.type || ''} ${s.capacity ?? ''}`.toLowerCase(),
+          additionalInfo: `${s.type || 'Sala'}${s.capacity ? ` - Capacidade: ${s.capacity}` : ''}`
         }));
-        
+
       case 'Dia':
-        return data.dias.map(dia => ({
-          id: dia.id,
-          display: dia.nome,
-          searchText: `${dia.nome} ${dia.nomeCompleto}`.toLowerCase(),
-          additionalInfo: dia.nomeCompleto
-        }));
-        
-      case 'Turma':
-        return data.turmas.map(turma => ({
-          id: turma.id,
-          display: turma.codigo,
-          searchText: `${turma.codigo} ${turma.nome} ${turma.curso}`.toLowerCase(),
-          additionalInfo: turma.curso
-        }));
-        
+        return diasBase.map((d, idx) => ({ id: `dia_${idx}`, display: d, searchText: d.toLowerCase(), additionalInfo: d }));
+
+      case 'Turma': {
+        const baseTurmas = (turmas || []).map((t: any) => t.code || t.nome || t.codigo).filter(Boolean);
+        const unique = Array.from(new Set(baseTurmas.length ? baseTurmas : ['A','B','C']));
+        return unique.map((t, idx) => ({ id: `tur_${idx}`, display: String(t), searchText: String(t).toLowerCase() }));
+      }
+
       case 'Modalidade':
-        return data.tipos.filter(tipo => tipo.categoria === 'Modalidade').map(tipo => ({
-          id: tipo.id,
-          display: tipo.nome,
-          searchText: `${tipo.nome}`.toLowerCase(),
-          additionalInfo: 'Modalidade de Ensino'
-        }));
-        
+        return modalidadesBase.map((m, idx) => ({ id: `mod_${idx}`, display: m, searchText: m.toLowerCase(), additionalInfo: 'Modalidade de Ensino' }));
+
       case 'Disciplina':
-        // Para o campo "Disciplina", mostrar APENAS os nomes das disciplinas
-        return data.disciplinas.map(disc => ({
-          id: disc.id,
-          display: disc.nome,
-          searchText: `${disc.nome} ${disc.codigo} ${disc.tipo}`.toLowerCase(),
-          additionalInfo: `${disc.codigo} - ${disc.tipo}`,
-          tipo: 'nome' as const
+        return (disciplinas || []).map(d => ({
+          id: d.id,
+          display: d.name,
+          searchText: `${d.name} ${d.code || ''}`.toLowerCase(),
+          additionalInfo: d.code || ''
         }));
-        
+
       case 'Código Disciplina':
-        // Para o campo "Código Disciplina", mostrar APENAS os códigos
-        return data.disciplinas.map(disc => ({
-          id: disc.id,
-          display: disc.codigo,
-          searchText: `${disc.codigo} ${disc.nome} ${disc.tipo}`.toLowerCase(),
-          additionalInfo: `${disc.nome} - ${disc.tipo}`,
-          tipo: 'codigo' as const
+        return (disciplinas || []).map(d => ({
+          id: d.id,
+          display: d.code,
+          searchText: `${d.code} ${d.name || ''}`.toLowerCase(),
+          additionalInfo: d.name || ''
         }));
-        
+
       default:
         return [];
     }
-  };
-
-  const currentOptions = getOptionsFromData();
+  }, [label, options, professores, semestres, salas, disciplinas, turmas, horariosBase, diasBase, modalidadesBase]);
   
   // Filter options based on search term
   const filteredOptions = currentOptions.filter(option =>
@@ -178,56 +177,41 @@ const SearchableFilter: React.FC<SearchableFilterProps> = ({
     }
   };
 
-  // Função para obter informações adicionais baseada no label e valor selecionado
-  const getAdditionalInfo = (): string => {
+  // Informações adicionais (derivadas das listas carregadas)
+  const additionalInfo = useMemo(() => {
     if (!selectedValue) return '';
-    
-    const data = academicData as AcademicData;
-    
     switch (label) {
-      case 'Professor':
-        const professor = data.professores.find(p => p.nome === selectedValue);
-        return professor ? `${professor.departamento} - ${professor.especialidade}` : '';
-        
-      case 'Sala':
-        const sala = data.salas.find(s => s.codigo === selectedValue);
-        return sala ? `${sala.tipo} - ${sala.bloco}${sala.andar}º andar` : '';
-        
-      case 'Turma':
-        const turma = data.turmas.find(t => t.codigo === selectedValue);
-        return turma ? `${turma.curso}` : '';
-        
-      case 'Modalidade':
-        const modalidade = data.tipos.find(t => t.nome === selectedValue && t.categoria === 'Modalidade');
-        return modalidade ? 'Modalidade de Ensino' : '';
-        
-      case 'Disciplina':
-        const disciplina = data.disciplinas.find(d => d.nome === selectedValue);
-        return disciplina ? `${disciplina.codigo} - ${disciplina.tipo}` : '';
-        
-      case 'Código Disciplina':
-        const disciplinaPorCodigo = data.disciplinas.find(d => d.codigo === selectedValue);
-        return disciplinaPorCodigo ? `${disciplinaPorCodigo.nome} - ${disciplinaPorCodigo.tipo}` : '';
-        
+      case 'Professor': {
+        const p = (professores || []).find(x => x.name === selectedValue);
+        return p?.email || '';
+      }
+      case 'Sala': {
+        const s = (salas || []).find(x => x.code === selectedValue);
+        return s ? `${s.type || 'Sala'}${s.capacity ? ` - Capacidade: ${s.capacity}` : ''}` : '';
+      }
+      case 'Disciplina': {
+        const d = (disciplinas || []).find(x => x.name === selectedValue);
+        return d?.code || '';
+      }
+      case 'Código Disciplina': {
+        const d = (disciplinas || []).find(x => x.code === selectedValue);
+        return d?.name || '';
+      }
       case 'Semestre':
-        const semestre = data.semestres.find(s => s.codigo === selectedValue);
-        return semestre ? semestre.nome : '';
-        
+        return selectedValue; // já é o nome/código
       case 'Horário Início':
       case 'Horário Final':
-        const horario = data.horarios.find(h => h.hora === selectedValue);
-        return horario ? horario.periodo : '';
-        
+        return '';
       case 'Dia':
-        const dia = data.dias.find(d => d.nome === selectedValue);
-        return dia ? dia.nomeCompleto : '';
-        
+        return selectedValue;
+      case 'Turma':
+        return '';
+      case 'Modalidade':
+        return 'Modalidade de Ensino';
       default:
         return '';
     }
-  };
-
-  const additionalInfo = getAdditionalInfo();
+  }, [selectedValue, label, professores, salas, disciplinas]);
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>

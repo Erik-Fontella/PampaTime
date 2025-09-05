@@ -1,7 +1,6 @@
 // src/hooks/useEventFilters.ts
 import { useState, useMemo, useCallback } from 'react';
 import { CalendarEvent } from '@/types/Event';
-import { getAcademicData } from '@/utils/academicDataUtils';
 
 export type FilterType = 'professor' | 'semestre' | 'sala';
 
@@ -51,17 +50,18 @@ export const useEventFilters = (events: CalendarEvent[]): UseEventFiltersReturn 
   const [searchTerm, setSearchTermState] = useState('');
   const [activeFilterType, setActiveFilterType] = useState<FilterType>('professor');
 
-  // Get academic data for filter options
-  const academicData = getAcademicData();
-
   // Memoized filter options
   const filterOptions = useMemo(() => {
+    const profs = Array.from(new Set(events.map(e => e.professor).filter(Boolean))) as string[];
+    const sems = Array.from(new Set(events.map(e => e.semester).filter(Boolean))) as string[];
+    const salas = Array.from(new Set(events.map(e => e.room).filter(Boolean))) as string[];
+
     return {
-      professor: academicData.professores.map(prof => prof.nome).sort(),
-      semestre: academicData.semestres.map(sem => sem.codigo).sort(),
-      sala: academicData.salas.map(sala => sala.codigo).sort()
+      professor: profs.sort(),
+      semestre: sems.sort(),
+      sala: salas.sort(),
     };
-  }, [academicData]);
+  }, [events]);
 
   // Filtered events
   const filteredEvents = useMemo(() => {

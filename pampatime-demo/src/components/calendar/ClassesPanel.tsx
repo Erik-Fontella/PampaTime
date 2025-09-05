@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import ClassCard from './ClassCard';
 import { Search } from 'lucide-react';
 import { Draggable } from '@fullcalendar/interaction';
-import { getAcademicData } from '@/utils/academicDataUtils';
+import useRealtimeCollection from '@/hooks/useRealtimeCollection';
+import { SubjectItem } from '@/types/management';
 
 interface ClassesPanelProps {
   // Removemos a dependência de existingEvents
@@ -27,19 +28,18 @@ const ClassesPanel: React.FC<ClassesPanelProps> = () => {
     }
   }, []);
 
-  // Obter todas as disciplinas do JSON
-  const academicData = getAcademicData();
-  const allDisciplinas = academicData.disciplinas;
+  // Obter disciplinas da base em tempo real
+  const { data: allDisciplinas } = useRealtimeCollection<SubjectItem>('disciplinas');
 
   // Filtrar disciplinas baseado na pesquisa
   const filteredDisciplinas = React.useMemo(() => {
+    if (!allDisciplinas) return [];
     if (!searchTerm) return allDisciplinas;
-    
     const searchLower = searchTerm.toLowerCase();
-    return allDisciplinas.filter(disciplina => 
-      disciplina.nome.toLowerCase().includes(searchLower) ||
-      disciplina.codigo.toLowerCase().includes(searchLower) ||
-      disciplina.tipo.toLowerCase().includes(searchLower)
+    return allDisciplinas.filter(disciplina =>
+      (disciplina.name || '').toLowerCase().includes(searchLower) ||
+      (disciplina.code || '').toLowerCase().includes(searchLower) ||
+      (disciplina.tipoSalaPreferencial || '').toLowerCase().includes(searchLower)
     );
   }, [allDisciplinas, searchTerm]);
 
@@ -77,18 +77,18 @@ const ClassesPanel: React.FC<ClassesPanelProps> = () => {
           filteredDisciplinas.map((disciplina) => (
             <ClassCard 
               key={`disciplina-${disciplina.id}`}
-              title={disciplina.nome}
-              type={disciplina.codigo} // Usar código como tipo para exibição
+              title={disciplina.name}
+              type={disciplina.code} // Usar código como tipo para exibição
               // Passar dados mínimos como evento para arrastar
               event={{
                 id: `disciplina-${disciplina.id}`,
-                title: disciplina.nome,
+                title: disciplina.name,
                 type: '', // Deixar vazio - será preenchido no formulário
                 room: '',
                 professor: '',
                 semester: '',
                 class: '',
-                codigo: disciplina.codigo
+                codigo: disciplina.code
               }}
               className="hover:shadow-md transition-shadow"
             />

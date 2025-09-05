@@ -1,16 +1,18 @@
-// src/pages/Index.tsx - Versão corrigida com sincronização funcional
+// src/pages/Calendar.tsx - Versão corrigida com sincronização funcional
 import React, { useRef, useCallback } from 'react';
 import SidePanel from '@/components/calendar/SidePanel';
 import Timetable from '@/components/calendar/Timetable';
 import Header from '@/components/Header';
-import { useEvents } from '@/hooks/useEvents';
+// import { useEvents } from '@/hooks/useEvents';
 import { CalendarEvent } from '@/types/Event';
+import { useRealtimeCalendarEvents } from '@/hooks/useRealtimeCalendarEvents';
 
 const Index = () => {
   const timetableRef = useRef<any>(null);
   
   // Centralized event management com callback para sincronização
-  const eventManager = useEvents();
+  // Persistência em tempo real (Firebase RTDB)
+  const eventManager = useRealtimeCalendarEvents();
 
   // Handle event click from calendar
   const handleEventClick = useCallback((event: CalendarEvent) => {

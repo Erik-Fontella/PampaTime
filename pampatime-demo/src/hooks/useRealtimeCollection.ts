@@ -3,7 +3,12 @@ import { rtdb } from '@/firebase/config';
 import { ref, onValue, off, DataSnapshot } from 'firebase/database';
 import { ManagedItem } from '@/types/management';
 
-const useRealtimeCollection = <T>(path: string) => {
+// Opções opcionais para compatibilidade com chamadas existentes
+type RealtimeOptions = {
+  listenLive?: boolean;
+};
+
+const useRealtimeCollection = <T>(path: string, _options?: RealtimeOptions) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

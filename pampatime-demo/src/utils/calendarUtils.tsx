@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 
 export const formatEventTime = (date: Date) => {
@@ -9,7 +8,8 @@ export const createEventContent = (eventInfo: any) => {
   const start = eventInfo.event.start;
   const end = eventInfo.event.end || new Date(start.getTime() + 60*60*1000);
   
-  const teacher = eventInfo.event.extendedProps?.teacher;
+  // Preferir 'professor' e manter fallback para 'teacher'
+  const professor = eventInfo.event.extendedProps?.professor ?? eventInfo.event.extendedProps?.teacher;
   const room = eventInfo.event.extendedProps?.room;
   
   const startTime = formatEventTime(start);
@@ -34,8 +34,8 @@ export const createEventContent = (eventInfo: any) => {
     >
       <div className='text-sm truncate'><b>{startTime} - {endTime}</b></div>
       <div className='font-bold truncate'>{eventInfo.event.title}</div>
-      {showDetails && teacher && 
-        <div className='truncate'><b>{teacher}</b></div>
+      {showDetails && professor && 
+        <div className='truncate'><b>{professor}</b></div>
       }
       {showDetails && room && 
         <div className='truncate'><b>{room}</b></div>
