@@ -1,5 +1,5 @@
 import React from 'react';
-import { ManagedItem, BookingItem, TeacherItem, CourseItem, SubjectItem, SemesterItem } from '@/types/management';
+import { ManagedItem, BookingItem, TeacherItem, CourseItem, SubjectItem, SemesterItem, TurmaItem } from '@/types/management';
 
 export interface ManagementRouteConfig<T extends ManagedItem> {
   path: string;
@@ -53,6 +53,25 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
       { key: "id", header: "Ações" }
     ],
   },
+  turmas: {
+    path: "/turmas",
+    title: "Gerenciar Turmas",
+    collectionPath: "turmas",
+    searchPlaceholder: "Buscar turma...",
+    addBtnLabel: "Adicionar Turma",
+    onAddClick: () => alert("Abrir formulário para adicionar turma!"),
+    columns: [
+      { key: "name", header: "Nome da Turma" },
+      { 
+        key: "course", 
+        header: "Curso",
+        render: (item: TurmaItem) => (
+          <span className="text-gray-700">{item.course}</span>
+        )
+      },
+      { key: "id", header: "Ações" }
+    ],
+  },
   disciplinas: {
     path: "/disciplinas",
     title: "Gerenciar Disciplinas",
@@ -63,7 +82,13 @@ export const managementRoutes: { [key: string]: ManagementRouteConfig<any> } = {
     columns: [
       { key: "code", header: "Código" },
       { key: "name", header: "Nome" },
-      { key: "course", header: "Curso" },
+      { 
+        key: "course", 
+        header: "Curso",
+        render: (item: SubjectItem) => (
+          <span className="text-gray-700">{item.course}</span>
+        )
+      },
       { key: "chTeorica", header: "CH Teórica" },
       { key: "chPratica", header: "CH Prática" },
       { key: "id", header: "Ações" }
