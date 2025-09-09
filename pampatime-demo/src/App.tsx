@@ -51,6 +51,7 @@ const App = () => (
             <Route path="/homedashboard" element={<RequireAuth><HomeDashboard /></RequireAuth>} />
             <Route path="/history" element={<RequireAuth><History /></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
             <Route path="/admin" element={<RequireAdmin><AdminUsers /></RequireAdmin>} />
             {Object.values(managementRoutes).map((route: ManagementRouteConfig<any>) => (
               <Route
