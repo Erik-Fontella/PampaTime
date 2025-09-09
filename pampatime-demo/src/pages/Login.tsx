@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
 const Login: React.FC = () => {
-  const { user, signIn, loading } = useAuth();
+  const { user, signIn, loading, sendReset } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/homedashboard';
@@ -14,6 +14,8 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resetStatus, setResetStatus] = useState<string | null>(null);
+  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     if (user && !loading) navigate(from, { replace: true });
@@ -33,6 +35,18 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleReset = async () => {
+    if(!email) { setResetStatus('Informe o email para receber o link.'); return; }
+    setResetStatus(null);
+    setResetLoading(true);
+    try {
+      await sendReset(email);
+      setResetStatus('Email de redefinição enviado (verifique sua caixa de entrada).');
+    } catch(e:any){
+      setResetStatus(e.message || 'Falha ao enviar email.');
+    } finally { setResetLoading(false); }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-sm">
@@ -49,7 +63,13 @@ const Login: React.FC = () => {
               <label className="text-sm font-medium">Senha</label>
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
             </div>
+            <div className="flex justify-end">
+              <button type="button" onClick={handleReset} className="text-xs text-emerald-600 hover:underline disabled:opacity-50" disabled={resetLoading}>
+                {resetLoading ? 'Enviando...' : 'Esqueci a senha'}
+              </button>
+            </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
+            {resetStatus && <p className="text-xs text-gray-600">{resetStatus}</p>}
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={submitting} className="w-full">{submitting ? 'Entrando...' : 'Entrar'}</Button>
