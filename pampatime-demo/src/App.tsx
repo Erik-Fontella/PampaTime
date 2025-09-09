@@ -1,3 +1,4 @@
+// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 import HomeDashboard from "./pages/HomeDashboard";
 import History from "./pages/History";
+import Reports from "./pages/Reports";
 import GenericManagement from "./pages/GenericManagementPage";
 import Login from "./pages/Login";
 import AdminUsers from "./pages/AdminUsers";
@@ -73,6 +75,7 @@ const App = () => (
       </TooltipProvider>
     </QueryClientProvider>
   </AuthProvider>
+  
 );
 
 export default App;

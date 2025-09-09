@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 import logo from '../assets/logo.png';
 import { FiClock } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -18,14 +19,39 @@ const Header = () => {
     <header className="font-normal bg-white px-8 py-4 border-b border-gray-200">
       <nav className="max-w-[1200px] mx-auto flex justify-between items-center relative">
 
-        <div className="flex gap-6 text-gray-600 text-sm">
-          <Link to="/" className={`relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:bg-[#49C17B] after:transition-all after:duration-200 ${location.pathname==='/'? 'after:w-full':'after:w-0 hover:after:w-full'}`}>Landing</Link>
-          {user && (
-            <>
-              <Link to="/homedashboard" className={`relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:bg-[#49C17B] after:transition-all after:duration-200 ${location.pathname.startsWith('/homedashboard')? 'after:w-full':'after:w-0 hover:after:w-full'}`}>Dashboard</Link>
-              <Link to="/calendar" className={`relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:bg-[#49C17B] after:transition-all after:duration-200 ${location.pathname.startsWith('/calendar')? 'after:w-full':'after:w-0 hover:after:w-full'}`}>Calendário</Link>
-            </>
-          )}
+
+        <div className="flex gap-8 text-gray-600 text-sm">
+          <Link
+            to="/"
+            className="relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:w-0 after:bg-[#49C17B] after:transition-all after:duration-200 hover:after:w-full"
+          >
+            Início
+          </Link>
+
+          <Link
+            to="/calendar"
+            className="relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:w-0 after:bg-[#49C17B] after:transition-all after:duration-200 hover:after:w-full"
+          >
+            Calendário
+          </Link>
+
+          <Link
+            to="/reports"
+            className="relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:w-0 after:bg-[#49C17B] after:transition-all after:duration-200 hover:after:w-full"
+          >
+            Relatórios
+          </Link>
+
+          {["Configuração", "Contato"].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:w-0 after:bg-[#49C17B] after:transition-all after:duration-200 hover:after:w-full"
+            >
+              {item}
+            </a>
+          ))}
+
         </div>
 
         <div className="absolute left-1/2 transform -translate-x-1/2">

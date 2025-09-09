@@ -17,7 +17,7 @@ const WeeklyCalendar = () => {
   const weekDays = React.useMemo(() => {
   const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
   const week = [];
-
+    
     let day = new Date(currentWeek);
     day.setDate(day.getDate() - day.getDay() + (day.getDay() === 0 ? -6 : 1));
 
@@ -57,13 +57,16 @@ const WeeklyCalendar = () => {
     setCurrentWeek(newDate);
   };
 
+  // --- NOVO: Função para simular a edição de um evento e registrar no histórico ---
   const handleEditEvent = async (eventId: string, newTitle: string) => {
+    // Você pode ter um modal ou formulário para pegar os dados de edição
     const updatedData = { title: newTitle }; 
-    const author = "Você"; 
+    const author = "Você"; // Ou o usuário logado
     const action = "Edição de evento";
 
     await updateTimetableEvent(eventId, updatedData, author, action);
   };
+  // --- FIM NOVO ---
 
   return (
     <div className="flex-1 p-6 bg-gray-50 min-h-0">
@@ -91,7 +94,7 @@ const WeeklyCalendar = () => {
                 return (
                   <div key={dayIdx} className="p-2 border-r border-gray-200 last:border-r-0">
                     {events.map((event) => (
-                  
+                      // Exemplo: um clique no evento dispara a edição
                       <div 
                         key={event.id}
                         onClick={() => handleEditEvent(event.id, `Novo Título para ${event.id}`)}

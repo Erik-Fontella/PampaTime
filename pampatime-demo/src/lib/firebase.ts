@@ -1,4 +1,6 @@
+// src/lib/firebase.ts
 import { app, database } from '@/firebase/config';
+
 import { ref, update, push, serverTimestamp, get, set, remove } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
@@ -31,11 +33,13 @@ const pushLog = async (entry: any) => {
   });
 };
 
+
 export const createTimetableEvent = async (eventId: string, data: any) => {
   const eventRef = ref(database, `timetables/${eventId}`);
   await set(eventRef, data);
   await pushLog({ action: 'create', eventId, fullAfter: data });
 };
+
 
 export const updateTimetableEvent = async (eventId: string, updatedData: any, action: string = 'update') => {
   const eventRef = ref(database, `timetables/${eventId}`);
@@ -55,6 +59,9 @@ export const deleteTimetableEvent = async (eventId: string) => {
   await pushLog({ action: 'delete', eventId, fullAfter: beforeVal });
 };
 
+
+
+
 export const restoreTimetableVersion = async (logId: string) => {
   const logRef = ref(database, `history-logs/${logId}`);
   const snapshot = await get(logRef);
@@ -63,7 +70,9 @@ export const restoreTimetableVersion = async (logId: string) => {
     console.error('Log inválido para restauração');
     return;
   }
+
   const eventRef = ref(database, `timetables/${logData.eventId}`);
   await set(eventRef, logData.fullAfter);
   await pushLog({ action: 'restore', eventId: logData.eventId, restoredFromLogId: logId, fullAfter: logData.fullAfter });
 };
+
