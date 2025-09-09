@@ -55,7 +55,7 @@ const Header = () => {
         </div>
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
-          <img src={logo} alt="PampaTime Logo" className="h-24" />
+          <img src={logo} alt="PampaTime Logo" className="h-32" />
         </div>
 
         <div className="flex-1 flex justify-end items-center gap-4">

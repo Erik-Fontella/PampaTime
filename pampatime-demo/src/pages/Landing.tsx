@@ -42,7 +42,7 @@ export default function Landing() {
               <a href="#contato" className="text-gray-600 hover:text-green-600">Contato</a>
             </div>
             <div className="flex-1 flex justify-center">
-              <img src={logo} alt="PampaTime" className="h-12" />
+              <img src={logo} alt="PampaTime" className="h-32" />
             </div>
             <div>
               {user ? (
