@@ -22,7 +22,7 @@ const Header = () => {
 
         <div className="flex gap-8 text-gray-600 text-sm">
           <Link
-            to="/"
+            to="/homedashboard"
             className="relative after:content-[''] after:absolute after:left-0 after:bottom-[0.1em] after:h-[1px] after:w-0 after:bg-[#49C17B] after:transition-all after:duration-200 hover:after:w-full"
           >
             Início
@@ -42,7 +42,7 @@ const Header = () => {
             Relatórios
           </Link>
 
-          {["Configuração", "Contato"].map((item) => (
+          {[ "Contato"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}

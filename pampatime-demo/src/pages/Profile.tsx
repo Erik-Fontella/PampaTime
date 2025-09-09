@@ -3,6 +3,7 @@ import useAuth from '@/hooks/useAuth';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
 
 export default function Profile(){
   const { user, updateDisplayName, sendReset } = useAuth();
@@ -32,11 +33,13 @@ export default function Profile(){
   };
 
   return (
-    <div className='p-6 max-w-lg'>
-      <Card>
-        <CardHeader><CardTitle>Perfil</CardTitle></CardHeader>
-        <form onSubmit={handleSave}>
-          <CardContent className='space-y-4'>
+    <>
+      <Header />
+      <div className='p-6 max-w-lg'>
+        <Card>
+          <CardHeader><CardTitle>Perfil</CardTitle></CardHeader>
+          <form onSubmit={handleSave}>
+            <CardContent className='space-y-4'>
             <div>
               <label className='text-sm font-medium'>Email</label>
               <Input value={user.email||''} disabled />
@@ -54,5 +57,6 @@ export default function Profile(){
         </form>
       </Card>
     </div>
+    </>
   );
 }
