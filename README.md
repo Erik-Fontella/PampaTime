@@ -21,6 +21,10 @@ O **PampaTime** é um projeto focado em facilitar o acompanhamento de tarefas e 
 - **Firebase**
 - Outras dependências do ecossistema JavaScript/TypeScript
 
+## Disponível em
+
+>[pampa time](pampa-time.vercel.app)
+
 
 ## 👤 Autores
 
